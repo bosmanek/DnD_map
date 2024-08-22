@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa DM</title>
+	<script type="text/javascript" src="/eel.js"></script>
+	<link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+    <style>
+        
+    </style>
+</head>
+<body class="players">
+    <div id="map-container">
+        <div id="map-wrapper">
+            <canvas id="fog-of-war"></canvas>
+        </div>
+    </div>
+
+    <!-- HUD - Left Side -->
+    <div id="left-hud" class="hud hidden">
+        <label class="checkbox-container" title="Checkbox 1 Functionality">
+			Checkbox 1
+            <input type="checkbox" id="checkbox-1">
+            <span class="checkmark"></span>
+        </label>
+        <label class="checkbox-container" title="Checkbox 2 Functionality">
+			Checkbox 2
+            <input type="checkbox" id="checkbox-2">
+            <span class="checkmark"></span>
+        </label>
+        <label class="checkbox-container" title="Checkbox 3 Functionality">
+			Checkbox 3
+            <input type="checkbox" id="checkbox-3">
+            <span class="checkmark"></span>
+        </label>
+    </div>
+
+    <!-- HUD - Bottom Right -->
+    <div id="bottom-right-hud" class="hud" title="Changes the zoom">
+        <label for="map-scale">Map Scale:</label>
+        <input type="number" id="map-scale" min="10" max="300" value="100">
+		<label for="map-scale">%</label>
+    </div>
+
+    <div class="hidden">
+        <input id="originX" hidden value="0">
+        <input id="originY" hidden value="0">
+    </div>
+
+    <div class="corner">
+        <img src="img/corner.png">
+    </div>
+
+    <script src="js/players.js"></script>
+</body>
+</html>

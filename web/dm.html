@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa DM</title>
+	<script type="text/javascript" src="/eel.js"></script>
+	<link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+    <style>
+        
+    </style>
+</head>
+<body class="dm">
+    <div id="map-container">
+        <div id="map-wrapper">
+            <canvas id="fog-of-war"></canvas>
+        </div>
+    </div>
+	
+	<!-- Drop new map file -->
+    <div id="drag-drop-area">
+		<input type="file" id="file-input" accept="image/*">
+		Przeciągnij plik tutaj, aby wgrać mapę
+	</div>
+	
+	<!-- HUD - Right Side -->
+    <div id="right-hud" class="hud">
+		<div id="tool-selection">
+			<div class="radio-button" title="Brush mode">
+				<input type="radio" id="fog-tool" name="tool" value="fog" checked="checked">
+				<label for="fog-tool">Fog Tool</label>
+			</div>
+			<div class="radio-button" title="Token mode">
+				<input type="radio" id="token-tool" name="tool" value="token">
+				<label for="token-tool">Token Tool</label>
+			</div>
+		</div>
+	</div>
+
+	<div id="right-side-container">
+		<div id="brush-size-control" class="hidden">
+			<input type="range" id="brush-size-slider" min="5" max="100" value="20" title="Changes the brush size">
+			<input type="number" id="brush-size-input" min="5" max="100" value="20" title="Changes the brush size">
+		</div>
+
+        <div id="token-customization" class="hidden">
+            <input type="color" id="token-color" value="#ff0000" title="Sets color for new token">
+			<input type="number" id="token-size-input" min="5" max="50" value="20" title="Sets size for new token">
+            <!--<input type="file" id="token-image" accept="image/*">
+            <label for="token-image" id="token-label">Token img</label>
+            <input type="text" id="token-text" placeholder="Token Label">-->
+        </div>
+    </div>
+
+    <!-- HUD - Left Side -->
+    <div id="left-hud" class="hud">
+        <label class="checkbox-container" title="Checkbox 1 Functionality">
+			Checkbox 1
+            <input type="checkbox" id="checkbox-1">
+            <span class="checkmark"></span>
+        </label>
+        <label class="checkbox-container" title="Checkbox 2 Functionality">
+			Checkbox 2
+            <input type="checkbox" id="checkbox-2">
+            <span class="checkmark"></span>
+        </label>
+        <label class="checkbox-container" title="Checkbox 3 Functionality">
+			Checkbox 3
+            <input type="checkbox" id="checkbox-3">
+            <span class="checkmark"></span>
+        </label>
+    </div>
+
+    <!-- HUD - Bottom Right -->
+    <div id="bottom-right-hud" class="hud" title="Changes the zoom">
+        <label for="map-scale">Map Scale:</label>
+        <input type="number" id="map-scale" min="10" max="300" value="100">
+		<label for="map-scale">%</label>
+    </div>
+
+    <!-- HUD - Top Left -->
+    <div id="top-left-hud" class="hud">
+        <label for="file-input" id="file-label" title="Changes map used in session">Change Map</label>
+        <div id="reset-fog" title="Resets the fog">Reset Fog</div>
+		<div id="open-players" title="Opens new window with players view">Open Players Map</div>
+    </div>
+
+    <div class="hidden">
+        <input id="originX" value="0">
+        <input id="originY" value="0">
+    </div>
+
+    <script src="js/dm.js"></script>
+</body>
+</html>

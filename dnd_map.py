@@ -1,0 +1,86 @@
+import os
+import eel
+import json
+import base64
+
+# Inicjalizacja aplikacji
+eel.init('web')
+
+# Ścieżki do zapisania danych
+MAP_FILE = 'saved_map.png'
+FOG_FILE = 'saved_fog.png'
+TOKENS_FILE = 'tokens.json'
+SETTING_FILE = 'settings.json'
+
+@eel.expose
+def save_map_state(map_data):
+    # Konwersja danych base64 na plik obrazu
+    header, encoded = map_data.split(",", 1)
+    data = base64.b64decode(encoded)
+
+    with open(MAP_FILE, "wb") as f:
+        f.write(data)
+
+    eel.recieve_map(map_data)
+
+@eel.expose
+def save_fog_state(fog_data):
+    # Konwersja danych base64 na plik obrazu
+    header, encoded = fog_data.split(",", 1)
+    data = base64.b64decode(encoded)
+
+    with open(FOG_FILE, "wb") as f:
+        f.write(data)
+
+    eel.recieve_fog(fog_data)
+
+@eel.expose
+def save_tokens_state(tokens_data):
+    with open(TOKENS_FILE, 'w') as f:
+        json.dump(tokens_data, f, indent=2)
+
+    eel.recieve_tokens(tokens_data)
+
+@eel.expose
+def save_inputs_state(inputs_data):
+    with open(SETTING_FILE, 'w') as f:
+        json.dump(inputs_data, f, indent=2)
+
+@eel.expose
+def load_saved_state():
+    # Ładowanie zapisanej mapy
+    map_data = None
+    if os.path.exists(MAP_FILE):
+        with open(MAP_FILE, "rb") as f:
+            map_data = f.read()
+        map_data = "data:image/png;base64," + base64.b64encode(map_data).decode()
+
+    # Ładowanie zapisanej mgły
+    fog_data = None
+    if os.path.exists(FOG_FILE):
+        with open(FOG_FILE, "rb") as f:
+            fog_data = f.read()
+        fog_data = "data:image/png;base64," + base64.b64encode(fog_data).decode()
+
+    # Ładowanie zapisanych tokenów
+    tokens_data = []
+    if os.path.exists(TOKENS_FILE):
+        with open(TOKENS_FILE, 'r') as f:
+            tokens_data = json.load(f)
+
+    # Ładowanie zapisanych ustawień
+    settings_data = {}
+    if os.path.exists(SETTING_FILE):
+        with open(SETTING_FILE, 'r') as f:
+            settings_data = json.load(f)
+
+    return {"map": map_data, "fog": fog_data, "tokens": tokens_data, "settings": settings_data}
+
+@eel.expose
+def open_players():
+    eel.show('players.html')
+
+eel.start('dm.html', block=False, size=(900, 600), port=8080)
+
+while True:
+    eel.sleep(1.0)
