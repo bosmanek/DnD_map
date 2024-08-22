@@ -22,14 +22,14 @@ This project is a tool designed for Dungeon Masters (DMs) playing Dungeons & Dra
 1. Clone this repository to your local machine:
 
     ```bash
-    git clone https://github.com/yourusername/dd-map-tool.git
-    cd dd-map-tool
+    git clone https://github.com/bosmanek/DnD_map
+    cd DnD_map
     ```
 
 2. Install Python dependencies:
 
     ```bash
-    pip install eel
+    pip install os, eel, json, base64
     ```
 
 3. Run the application:
@@ -47,7 +47,7 @@ This project is a tool designed for Dungeon Masters (DMs) playing Dungeons & Dra
    - **Brush Size:** Adjust the size of the fog brush.
    - **Token Customization:** Change the color, image, and label of the tokens.
 
-3. Save the current state of the map by clicking the save button. You can load this state later to continue from where you left off.
+3. Don't need to save, autosave is enabled by default.
 
 ### Controls
 
