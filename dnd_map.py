@@ -43,8 +43,16 @@ def save_tokens_state(tokens_data):
 
 @eel.expose
 def save_inputs_state(inputs_data):
+    print("s2")
     with open(SETTING_FILE, 'w') as f:
         json.dump(inputs_data, f, indent=2)
+    #recieve_position(inputs_data)
+
+
+@eel.expose
+def send_new_pos(x, y, s):
+    eel.recieve_position(x, y, s)
+        
 
 @eel.expose
 def load_saved_state():
@@ -80,7 +88,7 @@ def load_saved_state():
 def open_players():
     eel.show('players.html')
 
-eel.start('dm.html', block=False, size=(900, 600), port=8080)
+eel.start('dm.html', block=False, size=(900, 600), port=8080, mode='default')
 
 while True:
     eel.sleep(1.0)

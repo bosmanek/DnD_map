@@ -128,8 +128,8 @@ function createToken(x, y, size, color, text) {
 
     const token = document.createElement('div');
     token.className = 'token';
-    token.style.left = `${x - size/2}px`;
-    token.style.top = `${y - size/2}px`;
+    token.style.left = `${x}px`;
+    token.style.top = `${y}px`;
     token.style.width = `${size}px`;
     token.style.height = `${size}px`;
     token.style.backgroundColor = color;
@@ -257,22 +257,27 @@ function recieve_tokens(tokens) {
 
 // Ładowanie pozycji
 eel.expose(recieve_position);
-function recieve_position(settings) {
-	if (settings) {
-		for (const id in settings) {
-			const input = document.getElementById(id);
-			if (input) {
-				if (input.type === 'radio' || input.type === 'checkbox') {
-					input.checked = savedState.settings[id];
-				} else {
-					input.value = savedState.settings[id];
-				}
-			}
-		}
-		updateToolDisplay();
-		originX = parseInt(oriX.value);
-		originY = parseInt(oriY.value);
-		scale = parseInt(mapScale.value)/100;
-		mapWrapper.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
-	}
+function recieve_position(x, y, s) {
+	mapWrapper.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
 };
+// function recieve_position(settings) {
+// 	if (settings) {
+// 		//console.log(settings)
+// 		for (const id in settings) {
+// 			const input = document.getElementById(id);
+// 			if (input) {
+// 				if (input.type === 'radio' || input.type === 'checkbox') {
+// 					input.checked = savedState.settings[id];
+// 				} else {
+// 					input.value = savedState.settings[id];
+// 				}
+// 			}
+// 		}
+// 		updateToolDisplay();
+// 		console.log(oriX.value)
+// 		originX = parseInt(oriX.value);
+// 		originY = parseInt(oriY.value);
+// 		scale = parseInt(mapScale.value)/100;
+// 		mapWrapper.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
+// 	}
+// };

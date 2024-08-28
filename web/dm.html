@@ -16,6 +16,7 @@
         <div id="map-wrapper">
             <canvas id="fog-of-war"></canvas>
         </div>
+        <canvas id="grid"></canvas>
     </div>
 	
 	<!-- Drop new map file -->
@@ -42,6 +43,7 @@
 		<div id="brush-size-control" class="hidden">
 			<input type="range" id="brush-size-slider" min="5" max="100" value="20" title="Changes the brush size">
 			<input type="number" id="brush-size-input" min="5" max="100" value="20" title="Changes the brush size">
+            <input type="color" id="brush-color" value="#111111" title="Sets color for brush">
 		</div>
 
         <div id="token-customization" class="hidden">
@@ -89,6 +91,7 @@
     <div class="hidden">
         <input id="originX" value="0">
         <input id="originY" value="0">
+        <input id="grid-size" value="50">
     </div>
 
     <script src="js/dm.js"></script>

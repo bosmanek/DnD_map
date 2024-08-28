@@ -1,6 +1,8 @@
 const mapWrapper = document.getElementById('map-wrapper');
 const fogCanvas = document.getElementById('fog-of-war');
 const ctx = fogCanvas.getContext('2d');
+const gridCanvas = document.getElementById('grid');
+const gridCtx = gridCanvas.getContext('2d');
 const mapContainer = document.getElementById('map-container');
 const fileInput = document.getElementById('file-input');
 const dragDropArea = document.getElementById('drag-drop-area');
@@ -18,6 +20,10 @@ const brushSizeInput = document.getElementById('brush-size-input');
 brushSizeSlider.addEventListener('input', () => {
 	brushSizeInput.value = brushSizeSlider.value;
 });
+const brushColorInput = document.getElementById('brush-color');
+brushColorInput.addEventListener("change", () => {
+	fog_color = brushColorInput.value;
+})
 
 brushSizeInput.addEventListener('input', () => {
 	brushSizeSlider.value = brushSizeInput.value;
@@ -39,6 +45,11 @@ oriY.addEventListener("change", () => {
 	originY = parseInt(oriY.value)
 })
 
+const gridSizeInput = document.getElementById('grid-size');
+gridSizeInput.addEventListener("change", () => {
+	gridSize = parseFloat(gridSizeInput.value)
+})
+
 const fogToolRadio = document.getElementById('fog-tool');
 const tokenToolRadio = document.getElementById('token-tool');
 fogToolRadio.addEventListener('change', updateToolDisplay);
@@ -54,7 +65,9 @@ let isDrawing = false;
 let draggedToken = false;
 let startX, startY;
 let fog_color = "#111";
+let grid_color = '#888';
 let clickStartX, clickStartY;
+const gridSize = 50;
 // Historia zmian
 const undoStack = [];
 const maxUndoSteps = 50; // Maksymalna liczba kroków cofania
@@ -98,6 +111,7 @@ mapContainer.addEventListener('wheel', function(event) {
 	zoom(oldScale, event.clientX, event.clientY)
 	mapScale.value = parseInt(scale*100)
 	saveInputsState()
+	drawGrid();
 });
 
 // Obsługa przesuwania mapy (dragging)
@@ -117,7 +131,7 @@ mapContainer.addEventListener('mousedown', function(event) {
 		if (fogToolRadio.checked) {
 			isDrawing = true;
 			saveState(); // Zapisz stan przed dodaniem mgły
-			settings(event); // Dodanie mgły w miejscu kliknięcia
+			drawFog(event); // Dodanie mgły w miejscu kliknięcia
 		}
 	}
 });
@@ -127,6 +141,7 @@ window.addEventListener('mousemove', function(event) {
 		originX = event.clientX - startX;
 		originY = event.clientY - startY;
 		mapWrapper.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
+		sendNewPos(originX, originY, scale)
 		oriX.value = originX;
 		oriY.value = originY;
 		saveInputsState()
@@ -143,6 +158,7 @@ window.addEventListener('mousemove', function(event) {
         draggedToken.style.left = `${x}px`;
         draggedToken.style.top = `${y}px`;
     }
+	drawGrid();
 });
 
 window.addEventListener('mouseup', function() {
@@ -167,7 +183,8 @@ window.addEventListener('mouseup', function() {
 			const rect = mapWrapper.getBoundingClientRect();
 			const x = (event.clientX - rect.left) / scale;
 			const y = (event.clientY - rect.top) / scale;
-			createToken(x, y, parseInt(document.getElementById('token-size-input').value), document.getElementById('token-color').value, tokenCounter++);
+			const size = parseInt(document.getElementById('token-size-input').value);
+			createToken(x - size/2, y - size/2, size, document.getElementById('token-color').value, tokenCounter++);
 		}
 	}
 	if (draggedToken) {
@@ -180,6 +197,12 @@ window.addEventListener('keydown', function(event) {
 	if (event.ctrlKey && event.key === 'z') {
 		undo();
 	}
+});
+
+window.addEventListener('resize', function() {
+    gridCanvas.width = mapContainer.clientWidth;
+    gridCanvas.height = mapContainer.clientHeight;
+    drawGrid();
 });
 
 mapWrapper.addEventListener('mousedown', function(event) {
@@ -235,6 +258,7 @@ mapContainer.addEventListener('touchmove', function(event) {
         originX = event.touches[0].clientX - startX;
         originY = event.touches[0].clientY - startY;
         mapWrapper.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
+		sendNewPos(originX, originY, scale)
         oriX.value = originX;
         oriY.value = originY;
     } else if (event.touches.length === 2) {
@@ -302,6 +326,7 @@ function zoom(oldScale, centerX, centerY) {
     originY += centerY - (originY + newOffsetY);
 
 	mapWrapper.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
+	sendNewPos(originX, originY, scale)
 }
 
 // Funkcja przełączania widoczności
@@ -386,8 +411,8 @@ function createToken(x, y, size, color, text) {
 
     const token = document.createElement('div');
     token.className = 'token';
-    token.style.left = `${x - size/2}px`;
-    token.style.top = `${y - size/2}px`;
+    token.style.left = `${x}px`;
+    token.style.top = `${y}px`;
     token.style.width = `${size}px`;
     token.style.height = `${size}px`;
     token.style.backgroundColor = color;
@@ -479,6 +504,43 @@ function saveInputsState() {
     eel.save_inputs_state(inputsData);
 }
 
+function sendNewPos(x, y, s) {
+	eel.send_new_pos(x, y, s);
+}
+
+// Ustawienia początkowe canvasa siatki
+gridCanvas.width = mapContainer.clientWidth;
+gridCanvas.height = mapContainer.clientHeight;
+
+// Funkcja do rysowania siatki
+drawGrid();
+function drawGrid() {
+    /*gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+    gridCtx.strokeStyle = grid_color; // Kolor linii siatki
+    gridCtx.lineWidth = 1; // Grubość linii siatki
+
+    const scaledGridSize = gridSize * scale;
+
+    // Obliczenie przesunięcia siatki względem położenia mapy w kontenerze
+    const rect = mapWrapper.getBoundingClientRect();
+    const offsetX = rect.left % scaledGridSize;
+    const offsetY = rect.top % scaledGridSize;
+
+    for (let x = offsetX; x < gridCanvas.width; x += scaledGridSize) {
+        gridCtx.beginPath();
+        gridCtx.moveTo(x+.5, 0+.5);
+        gridCtx.lineTo(x+.5, gridCanvas.height+.5);
+        gridCtx.stroke();
+    }
+
+    for (let y = offsetY; y < gridCanvas.height; y += scaledGridSize) {
+        gridCtx.beginPath();
+        gridCtx.moveTo(0+.5, y+.5);
+        gridCtx.lineTo(gridCanvas.width+.5, y+.5);
+        gridCtx.stroke();
+    }*/
+}
+
 // Ładowanie zapisanego stanu mapy i mgły przy starcie
 window.onload = function() {
 	eel.load_saved_state()(function(savedState) {
@@ -532,6 +594,7 @@ window.onload = function() {
 			originY = parseInt(oriY.value);
 			scale = parseInt(mapScale.value)/100;
 			mapWrapper.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
+			fog_color = brushColorInput.value;
 		}
 	});
 };

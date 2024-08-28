@@ -50,6 +50,13 @@ body.players {
 	opacity: 1;
 }
 
+#grid {
+	pointer-events: none;
+	position: relative;
+	z-index: 1;
+	opacity: .3;
+}
+
 .token {
 	position: absolute;
 	width: 20px;
@@ -165,6 +172,10 @@ input[type=color] {
     padding: 0 2px;
     border-radius: 5px;
 	margin: 0 auto;
+}
+
+#brush-color {
+	margin-top: 10px;
 }
 
 button, input[type=button], input[type=file] {
